@@ -23,7 +23,7 @@ type WebResult struct {
 	HTTPError string           `json:"HTTPError,omitempty"`
 }
 
-var reportUrl string = "http://api1.startops.com.cn/v1/hook/diag/web/report"
+var reportUrl string = "https://api.startops.com.cn/v1/hook/diag/web/report"
 
 func WebDiag(webUrl string) (string, error) {
 	
