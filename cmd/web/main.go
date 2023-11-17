@@ -23,19 +23,31 @@ type webResult struct {
 	HTTPError string           `json:"HTTPError,omitempty"`
 }
 
+var webUrl string
+var reportUrl string
+
 func init() {
-	flag.Parse()
+	flag.StringVar(&webUrl, "webUrl", "", "--webUrl=https://www.startops.com.cn")
+	flag.StringVar(&reportUrl, "reportUrl", "", "--webUrl=https://api.startops.com.cn/api/diag/web/report")
 }
 
 func main() {
+	flag.Parse()
+	
+	if webUrl == "" {
+		fmt.Println("webUrl 参数必须填写")
+		return
+	}
+	
 	var wr webResult
 	
 	os := runtime.GOOS
 	wr.Os = os
 	
-	webUrl := "https://www.baidu.com"
+	//webUrl := "https://www.baidu.com"
 	u, err := url.Parse(webUrl)
 	if err != nil {
+		fmt.Println("解析 webUrl 失败, err: ", err)
 		return
 	}
 	
@@ -62,5 +74,11 @@ func main() {
 	
 	//
 	wrs, err := json.Marshal(wr)
-	fmt.Println(string(wrs))
+	
+	if reportUrl != "" {
+		err = http.Report(reportUrl, wrs)
+		fmt.Println("上报诊断信息到远端系统失败, err: ", err)
+		return
+	}
+	
 }

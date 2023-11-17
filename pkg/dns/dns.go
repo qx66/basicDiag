@@ -23,6 +23,7 @@ func Question(fqdn string) (Result, error) {
 	
 	os := runtime.GOOS
 	r.OS = os
+	r.FQDN = fqdn
 	
 	resolver := net.Resolver{}
 	addr, err := resolver.LookupHost(context.Background(), fqdn)
