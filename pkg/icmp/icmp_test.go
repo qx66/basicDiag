@@ -1,9 +1,13 @@
 package icmp
 
 import (
+	"fmt"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func TestICMP(t *testing.T) {
-	ICMP("baidu.com")
+func TestIcmp(t *testing.T) {
+	r, err := Icmp("baidu.com", 4)
+	require.NoError(t, err, "执行Icmp失败")
+	fmt.Println(r)
 }

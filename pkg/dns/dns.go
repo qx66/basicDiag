@@ -2,67 +2,37 @@ package dns
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	ndns "github.com/miekg/dns"
 	"net"
-	"runtime"
-	"time"
 )
 
-type Result struct {
-	OS           string   `json:"OS,omitempty"`
-	FQDN         string   `json:"FQDN,omitempty"`
-	ANSWER       []string `json:"ANSWER,omitempty"`
-	ExtANSWER    string   `json:"ExtANSWER,omitempty"`
-	ExtDNSAddr   []string `json:"ExtDNSAddr,omitempty"`
-	ExtDNSSearch []string `json:"ExtDNSSearch,omitempty"`
-	ExtTimeout   int      `json:"ExtTimeout,omitempty"`
+func LookupHost(ctx context.Context, fqdn string) ([]string, error) {
+	resolver := net.Resolver{}
+	return resolver.LookupHost(ctx, fqdn)
 }
 
-func Question(fqdn string) (Result, error) {
-	var r Result
-	
-	os := runtime.GOOS
-	r.OS = os
-	r.FQDN = fqdn
-	
-	resolver := net.Resolver{}
-	addr, err := resolver.LookupHost(context.Background(), fqdn)
-	if err != nil {
-		return r, err
-	}
-	
-	r.ANSWER = addr
+// return result, rtt, error
+
+func Query(fqdn, ns string) (string, float64, error) {
+	//
+	m := new(ndns.Msg)
+	m.SetQuestion(ndns.Fqdn(fqdn), ndns.TypeA)
+	m.RecursionDesired = true
 	
 	//
-	if os == "darwin" || os == "linux" || os == "freebsd" {
-		cc, err := ndns.ClientConfigFromFile("/etc/resolv.conf")
-		if err != nil {
-			return r, nil
-		}
-		
-		r.ExtDNSAddr = cc.Servers
-		r.ExtDNSSearch = cc.Search
-		r.ExtTimeout = cc.Timeout
-		
-		cli := &ndns.Client{
-			Net:          "tcp",
-			Timeout:      5 * time.Second,
-			DialTimeout:  5 * time.Second,
-			ReadTimeout:  5 * time.Second,
-			WriteTimeout: 5 * time.Second,
-		}
-		
-		m := &ndns.Msg{}
-		
-		m.SetQuestion(ndns.Fqdn(fqdn), ndns.TypeA)
-		m.RecursionDesired = true
-		msg, _, err := cli.Exchange(m, net.JoinHostPort(cc.Servers[0], cc.Port))
-		if err != nil {
-			r.ExtANSWER = err.Error()
-		} else {
-			r.ExtANSWER = msg.String()
-		}
+	cli := new(ndns.Client)
+	r, rtt, err := cli.Exchange(m, ns)
+	rt := rtt.Seconds()
+	
+	if err != nil {
+		return "", rt, err
 	}
 	
-	return r, nil
+	if r.Rcode != ndns.RcodeSuccess {
+		return "", rt, errors.New(fmt.Sprintf("解析失败, Rcode: %d", r.Rcode))
+	}
+	
+	return r.String(), rt, nil
 }

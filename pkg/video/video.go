@@ -5,14 +5,21 @@ import (
 	"github.com/imkira/go-libav/avformat"
 )
 
-func GetVideo() {
+func GetVideo(videUrl string) error {
 	ctx, err := avformat.NewContextForInput()
 	if err != nil {
-		return
+		return err
 	}
 	
-	ctx.OpenInput("https://startops-static.oss-cn-hangzhou.aliyuncs.com/video/mao1.mov", nil, nil)
-	ctx.FindStreamInfo(nil)
+	err = ctx.OpenInput(videUrl, nil, nil)
+	if err != nil {
+		return err
+	}
+	
+	err = ctx.FindStreamInfo(nil)
+	if err != nil {
+		return err
+	}
 	
 	for _, stream := range ctx.Streams() {
 		
@@ -22,4 +29,5 @@ func GetVideo() {
 		fmt.Println("AverageFrameRate: ", stream.AverageFrameRate())
 	}
 	
+	return nil
 }

@@ -7,19 +7,26 @@ import (
 	"fmt"
 	"io"
 	nhttp "net/http"
+	"time"
 )
+
+// Get
 
 type Result struct {
 	StatusCode int
 	Header     map[string][]string
 	Body       string
+	StartTime  int64
+	EndTime    int64
 }
 
 func Get(url string) (Result, error) {
 	var r Result
+	r.StartTime = time.Now().Unix()
 	
 	resp, err := nhttp.Get(url)
 	if err != nil {
+		r.EndTime = time.Now().Unix()
 		return r, err
 	}
 	
@@ -36,8 +43,12 @@ func Get(url string) (Result, error) {
 	} else {
 		r.Body = string(respBodyByte)
 	}
+	
+	r.EndTime = time.Now().Unix()
 	return r, nil
 }
+
+// report
 
 type ReportResponse struct {
 	ErrCode int    `json:"errCode,omitempty"`

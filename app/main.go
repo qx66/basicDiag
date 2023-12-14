@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -25,6 +26,7 @@ func main() {
 }
 
 func makeUI(w fyne.Window) fyne.CanvasObject {
+	ctx := context.Background()
 	// header
 	header := canvas.NewText("StartOps网络诊断", theme.PrimaryColor())
 	header.TextSize = 42
@@ -54,7 +56,7 @@ func makeUI(w fyne.Window) fyne.CanvasObject {
 				input.Refresh()
 			}
 			
-			id, err := biz.WebDiag(input.Text)
+			id, err := biz.BasicDiag(ctx, input.Text)
 			if err != nil {
 				
 				output.Text = fmt.Sprintf("Time: %s, %s", time.Now().String(), err.Error())
