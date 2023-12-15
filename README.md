@@ -36,6 +36,12 @@ fyne package -os android -appID my.domain.appname
     协议: https
     服务域名: diag.startops.com.cn
 
+## 简单上手操作
+
+1. 下载 apk app 并安装
+2. 输入要诊断的 url，点击诊断
+3. 诊断完成后最终会出现一个uuid串
+4. 获取uuid串，并访问 https://diag.startops.com.cn/v1/hook/diag/web/report?id=${uuid}
 
 ## 诊断App
 
