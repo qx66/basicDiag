@@ -56,7 +56,7 @@ linux:
 
 .PHONY: darwin
 # build
-linux:
+darwin:
 	mkdir -p bin
 	CGO_ENABLED=1 GOOS=darwin  GOARCH=amd64 go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/basicDiag-mac ./web/
 
