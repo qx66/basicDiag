@@ -48,13 +48,17 @@ submodule:
 
 
 
-.PHONY: build
+.PHONY: linux
 # build
-build:
+linux:
 	mkdir -p bin
-# CGO_ENABLED=0
-	CGO_ENABLED=1 GOOS=darwin  GOARCH=amd64 go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/basicDiag-mac ./web/
 	CGO_ENABLED=1 GOOS=linux   GOARCH=amd64 go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/basicDiag-linux ./web/
+
+.PHONY: darwin
+# build
+linux:
+	mkdir -p bin
+	CGO_ENABLED=1 GOOS=darwin  GOARCH=amd64 go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/basicDiag-mac ./web/
 
 .PHONY: app
 app:
