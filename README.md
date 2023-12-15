@@ -29,9 +29,12 @@ fyne package -os android -appID my.domain.appname
     要求基础镜像支持GLIBC
     /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.32' not found (required by ./basicDiag-linux)
 
-## 默认服务
+## 公共服务
 
-https://diag.startops.com.cn/v1/hook/diag/web/report
+默认公共服务:
+
+    协议: https
+    服务域名: diag.startops.com.cn
 
 
 ## 诊断App
