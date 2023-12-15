@@ -9,11 +9,11 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/StartOpsTools/basicDiag/internal/biz"
+	"github.com/qx66/basicDiag/internal/biz"
 	"net/url"
 	"time"
 	
-	lTheme "github.com/StartOpsTools/basicDiag/pkg/theme"
+	lTheme "github.com/qx66/basicDiag/pkg/theme"
 )
 
 func main() {
@@ -56,13 +56,21 @@ func makeUI(w fyne.Window) fyne.CanvasObject {
 				input.Refresh()
 			}
 			
-			id, err := biz.BasicDiag(ctx, input.Text)
+			r, err := biz.BasicDiag(ctx, input.Text, output)
 			if err != nil {
-				
 				output.Text = fmt.Sprintf("Time: %s, %s", time.Now().String(), err.Error())
 			} else {
-				output.Text = fmt.Sprintf("Time: %s, 诊断上报成功, id: %s", time.Now().String(), id)
+				output.Text = r
 			}
+			
+			/*
+				id, err := biz.BasicDiag(ctx, input.Text)
+				if err != nil {
+					output.Text = fmt.Sprintf("Time: %s, %s", time.Now().String(), err.Error())
+				} else {
+					output.Text = fmt.Sprintf("Time: %s, 诊断上报成功, id: %s", time.Now().String(), id)
+				}
+			*/
 			
 			output.Refresh()
 		})
@@ -105,11 +113,10 @@ func makeUI(w fyne.Window) fyne.CanvasObject {
 		func() {
 			clipboard := w.Clipboard()
 			clipboard.SetContent(output.Text)
-			output.Text = ""
-			output.Refresh()
-			
-			input.Text = ""
-			input.Refresh()
+			//output.Text = ""
+			//output.Refresh()
+			//input.Text = ""
+			//input.Refresh()
 		},
 	)
 	copy.Importance = widget.WarningImportance

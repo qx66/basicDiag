@@ -24,7 +24,11 @@ func Get(url string) (Result, error) {
 	var r Result
 	r.StartTime = time.Now().Unix()
 	
-	resp, err := nhttp.Get(url)
+	cli := nhttp.Client{
+		Timeout: 10 * time.Second,
+	}
+	
+	resp, err := cli.Get(url)
 	if err != nil {
 		r.EndTime = time.Now().Unix()
 		return r, err
@@ -53,20 +57,20 @@ func Get(url string) (Result, error) {
 type ReportResponse struct {
 	ErrCode int    `json:"errCode,omitempty"`
 	ErrMsg  string `json:"errMsg,omitempty"`
-	Result  string `json:"result,omitempty"`
+	Id      string `json:"id,omitempty"`
 }
 
 func Report(url string, body []byte) (string, error) {
 	var reportResponse ReportResponse
 	
-	// req
-	resp, err := nhttp.Post(url, "application/json", bytes.NewBuffer(body))
-	if err != nil {
-		return reportResponse.Result, err
+	cli := nhttp.Client{
+		Timeout: 10 * time.Second,
 	}
 	
-	if resp.StatusCode != 200 {
-		return reportResponse.Result, errors.New(fmt.Sprintf("http code: %d", resp.StatusCode))
+	// req
+	resp, err := cli.Post(url, "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		return reportResponse.Id, err
 	}
 	
 	// req response body
@@ -75,9 +79,13 @@ func Report(url string, body []byte) (string, error) {
 	
 	respBodyByte, err := io.ReadAll(respBody)
 	if err != nil {
-		return reportResponse.Result, err
+		return reportResponse.Id, err
+	}
+	
+	if resp.StatusCode != 200 {
+		return reportResponse.Id, errors.New(fmt.Sprintf("http code: %d, resp: %s.", resp.StatusCode, string(respBodyByte)))
 	}
 	
 	err = json.Unmarshal(respBodyByte, &reportResponse)
-	return reportResponse.Result, err
+	return reportResponse.Id, err
 }

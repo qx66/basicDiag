@@ -51,7 +51,16 @@ submodule:
 .PHONY: build
 # build
 build:
+	mkdir -p bin
+# CGO_ENABLED=0
+	CGO_ENABLED=1 GOOS=darwin  GOARCH=amd64 go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/basicDiag-mac ./web/
+	CGO_ENABLED=1 GOOS=linux   GOARCH=amd64 go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/basicDiag-linux ./web/
+
+.PHONY: app
+app:
 	cd app && fyne package -os android -icon icon.png -appID cn.com.startops
+	mv app/app.apk bin/app.apk
+
 #&& fyne package -os windows -icon icon.png
 
 .PHONY: generate

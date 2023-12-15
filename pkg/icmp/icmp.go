@@ -1,22 +1,20 @@
 package icmp
 
 import (
-	"encoding/json"
 	"github.com/go-ping/ping"
 )
 
-func Icmp(addr string, count int) (string, error) {
+func Icmp(addr string, count int) (*ping.Statistics, error) {
 	pinger, err := ping.NewPinger(addr)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	
 	pinger.Count = count
 	err = pinger.Run()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	
-	r, err := json.Marshal(pinger.Statistics())
-	return string(r), err
+	return pinger.Statistics(), nil
 }
