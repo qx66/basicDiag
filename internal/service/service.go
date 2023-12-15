@@ -82,6 +82,10 @@ func (service *Service) RecordReport(c *gin.Context) {
 
 func (service *Service) GetReport(c *gin.Context) {
 	id := c.Query("id")
+	if id == "" {
+		c.JSON(400, gin.H{"errCode": 400, "errMsg": "请输出id参数"})
+		return
+	}
 	
 	//rows, err := service.db.Query("SELECT * FROM diag")
 	rows, err := service.db.Query("SELECT * FROM diag where `id` = ?", id)
