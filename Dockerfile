@@ -6,7 +6,7 @@ ADD . /go/src
 RUN GOPROXY=https://goproxy.cn;make linux
 
 #FROM docker.io/library/busybox:stable-glibc
-FROM registry.cn-hangzhou.aliyuncs.com/startops-base/debian-runtime:11.7-slim
+FROM registry.cn-hangzhou.aliyuncs.com/startops-base/debian:11.7
 
 COPY --from=builder /go/src/bin/basicDiag-linux /app/basicDiag-linux
 
